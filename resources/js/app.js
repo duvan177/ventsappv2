@@ -11,7 +11,10 @@ window.Vue = require('vue');
 import Vuetify from 'vuetify'
 import '@mdi/font/css/materialdesignicons.css'
 Vue.use(Vuetify, {
-    iconfont: 'mdi'
+    iconfont: 'mdi',
+
+
+
 });
 
 /**
@@ -30,8 +33,9 @@ Vue.component('nav-component', require('./components/nav.vue').default);
 Vue.component('alimentos-component', require('./components/almacen/alimentos.vue').default);
 Vue.component('panaderia-component', require('./components/almacen/panaderia.vue').default);
 
-
-
+// modulo de ventas de articulos
+Vue.component('venta-component', require('./components/ventas/VentasComponet.vue').default);
+// -------------------------------------------------------------------
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -41,5 +45,8 @@ Vue.component('panaderia-component', require('./components/almacen/panaderia.vue
 
 const app = new Vue({
     el: '#app',
-    vuetify: new Vuetify(),
+    vuetify: new Vuetify(
+
+    ),
+
 });

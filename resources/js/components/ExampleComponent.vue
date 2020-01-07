@@ -3,9 +3,11 @@
     <v-navigation-drawer
       v-model="drawer"
       :clipped="$vuetify.breakpoint.lgAndUp"
+     
+       
       app
     >
-      <v-list dense>
+      <v-list nav dense>
         <template v-for="item in items">
           <v-row
             v-if="item.heading"
@@ -27,7 +29,7 @@
               >EDIT</a>
             </v-col>
           </v-row>
-          <v-list-group
+          <v-list-group 
             v-else-if="item.children"
             :key="item.text"
             v-model="item.model"
@@ -122,7 +124,7 @@
 
     <template  v-if="menu == 0">
     <transition name="component-fade" mode="out-in">
- <alimentos-component></alimentos-component>
+ <venta-component></venta-component>
       </transition>
        
       </template>
@@ -133,7 +135,12 @@
     </transition>
  </template>
  
-
+  <template  v-if="menu == 3">
+    <transition name="component-fade" mode="out-in">
+     <alimentos-component></alimentos-component>
+    </transition>
+ </template>
+ 
 
 
 
@@ -242,6 +249,7 @@
       menu:0,
       dialog: false,
       drawer: null,
+      resp:false,
       items: [
         { icon: 'mdi-home', text: 'Ventas', nun:0 },
         { icon: 'mdi-food', text: 'Ingresos' , nun:1 },
@@ -254,9 +262,9 @@
            nun:2,
           model: false,
           children: [
-            { text: 'Almacen' ,nun:0},
-            { text: 'Panadera' ,nun:2 },
-            { text: 'Productos dados de baja'  ,nun:3},
+            { text: 'Almacen' ,nun:3},
+            { text: 'Panadera' ,nun:4 },
+            { text: 'Productos dados de baja'  ,nun:5},
          
             { text: 'Other contacts' ,nun:1 },
           ],
@@ -266,7 +274,22 @@
         { icon: 'mdi-help-circle', text: 'Help' },
      
       ],
+        
     }),
+    watch:{
+       menu () {
+         if (this.resp) {
+           this.drawer = false
+         }
+       
+      },
+    },
+    mounted(){
+      console.log( screen.width)
+      if (screen.width <= 600) {
+        this.resp = true;
+      }
+    }
   }
 </script>
 

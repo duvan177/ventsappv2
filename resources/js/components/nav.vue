@@ -20,7 +20,7 @@
           <v-spacer></v-spacer>
           <v-text-field label="Numero Comprobante" v-model="ncomp" filled rounded readonly dense></v-text-field>
         </v-card-title>
-        <v-card-title primary-title></v-card-title>
+       
         <v-card-text transition="scale-transition" v-if="persona">
           <v-container>
             <v-row>
@@ -286,20 +286,19 @@ export default {
     };
   },
   methods: {
-    notificacion(msg){
+    notificacion(msg) {
       this.text = msg[0];
       this.color = msg[1];
       this.snackbar = true;
     },
     remove(obj) {
-       var opcion = confirm('Desea eliminar registro de ingreso');
-       if (opcion) {
-          const index = this.datatable.indexOf(obj);
-      this.datatable.splice(index, 1);
-      let msg = ['eliminado','success'];
-      this.notificacion(msg);
-       } 
-
+      var opcion = confirm("Desea eliminar registro de ingreso");
+      if (opcion) {
+        const index = this.datatable.indexOf(obj);
+        this.datatable.splice(index, 1);
+        let msg = ["eliminado", "success"];
+        this.notificacion(msg);
+      }
     },
     limpiar() {
       this.codigoart = "";
@@ -309,31 +308,38 @@ export default {
       this.p_venta = "";
       this.articulo = "";
     },
-    sendingreso(){
+    sendingreso() {
       if (this.datatable.length >= 1) {
-          axios
-        .post("api/create-detalle-ingreso",{
-          arraydata:this.datatable
-        })
-        .then(res => {
-         // this.productos = res.data;
-          console.log(res);
-        })
-        .finally(() =>{
+        axios
+          .post("api/create-detalle-ingreso", {
+            arraydata: this.datatable
+          })
+          .then(res => {
+            // this.productos = res.data;
+            console.log(res);
+          })
+          .finally(() => {
             this.loading = false;
-              let msg = ['ingreso finalizado con exito','success'];
-      this.notificacion(msg);
-        })
-        .catch(e => {});  
+            let msg = ["ingreso finalizado con exito", "success"];
+            this.notificacion(msg);
+          })
+          .catch(e => {});
       } else {
-          let msg = ['Ingrese articulos y finalizar','red'];
-      this.notificacion(msg);
+        let msg = ["Ingrese articulos y finalizar", "red"];
+        this.notificacion(msg);
       }
-          
     },
     addingreso() {
       //datatable
-      if (this.articulo && this.cantidad && this.p_compra && this.p_venta && this.p_compra >0 && this.p_venta  > 0 && this.cantidad>0) {
+      if (
+        this.articulo &&
+        this.cantidad &&
+        this.p_compra &&
+        this.p_venta &&
+        this.p_compra > 0 &&
+        this.p_venta > 0 &&
+        this.cantidad > 0
+      ) {
         let total = parseInt(this.p_compra * this.cantidad);
 
         this.datatable.push({
@@ -350,8 +356,8 @@ export default {
 
         this.limpiar();
       } else {
-        let msg = ['Complete los campos requeridos y que sean validos','red']
-       this.notificacion(msg)
+        let msg = ["Complete los campos requeridos y que sean validos", "red"];
+        this.notificacion(msg);
       }
       //console.log(this.datatable);
     },
@@ -403,9 +409,8 @@ export default {
     }
   },
   watch: {
-
-    datatable(newdatos){
-        localStorage.venta = JSON.stringify(newdatos);
+    datatable(newdatos) {
+      localStorage.venta = JSON.stringify(newdatos);
     },
 
     persona(val) {
@@ -426,8 +431,7 @@ export default {
     }
   },
   mounted() {
-    
-      if (localStorage.venta) {
+    if (localStorage.venta) {
       // this.consulta = atob(JSON.parse(localStorage.getItem("venta")));
       let venta = localStorage.getItem("venta");
       this.datatable = JSON.parse(venta);
