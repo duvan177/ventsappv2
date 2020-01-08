@@ -39,7 +39,8 @@ class ArticuloController extends Controller
 
     public function setarticulos()
     {
-        $data = articulo::all();   
+        $data = articulo::all();  
+         
         return response()->json($data, 200);
     
         }

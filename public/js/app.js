@@ -2166,11 +2166,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: {
-    source: String
-  },
+  props: ['id'],
   data: function data() {
     return {
+      iduser: null,
       menu: 0,
       dialog: false,
       drawer: null,
@@ -2226,7 +2225,8 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    console.log(screen.width);
+    console.log(this.id);
+    this.iduser = this.id;
 
     if (screen.width <= 600) {
       this.resp = true;
@@ -2987,7 +2987,8 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       axios.post("api/set-articulos").then(function (res) {
-        _this2.productos = res.data; // console.log(res);
+        _this2.productos = res.data;
+        console.log(res);
       })["finally"](function () {
         return _this2.loading = false;
       })["catch"](function (e) {});
@@ -3194,16 +3195,51 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['iduser'],
   data: function data() {
     return {
       loading: false,
+      snackbar: false,
+      x: "right",
+      y: "top",
+      color: "",
+      timeout: 4000,
+      mode: "",
+      text: "",
       //datos para gregar articulos a la tabla
       numcomp: 1001,
       tipocomp: "factura",
       cliente: 2,
-      und: "",
+      und: 1,
       //-------------------------------------------
+      impuesto: 19,
+      descuento: 0,
+      total_venta: 0,
+      estado: 1,
       clientes: [{
         id: 2,
         nombre: "cliente"
@@ -3235,11 +3271,29 @@ __webpack_require__.r(__webpack_exports__);
         value: "action",
         align: "center"
       }],
-      articulo: "",
-      radios: "radio-1"
+      articulo: ""
     };
   },
   methods: {
+    remove: function remove(obj) {
+      var opcion = confirm("Desea eliminar registro de ingreso");
+
+      if (opcion) {
+        var index = this.datatable.indexOf(obj);
+        this.datatable.splice(index, 1);
+        var msg = ["eliminado", "success"];
+        this.notificacion(msg);
+      }
+    },
+    eventoNum: function eventoNum(i) {
+      i = String(i).replace(/\D/g, "");
+      return i === "" ? i : Number(i).toLocaleString();
+    },
+    notificacion: function notificacion(msg) {
+      this.text = msg[0];
+      this.color = msg[1];
+      this.snackbar = true;
+    },
     getarticulos: function getarticulos() {
       var _this = this;
 
@@ -3257,30 +3311,93 @@ __webpack_require__.r(__webpack_exports__);
     addarticulo: function addarticulo() {
       var _this2 = this;
 
-      var data = this.articulosventa.filter(function (res) {
-        return res.codigo == _this2.articulo;
-      }); //
-
-      var v = data.forEach(function (value) {
-        var total = value.precio_venta * _this2.und;
-        var newobj = {
-          nombre: value.nombre,
-          cantidad: _this2.und,
-          codigo: value.codigo,
-          total: total,
-          precio_venta: value.precio_venta,
-          idpersona: _this2.cliente,
-          tipocomp: _this2.tipocomp,
-          numcomp: _this2.numcomp
-        };
-
-        _this2.datatable.push(newobj); // console.log(value)
-
+      var th = this;
+      var promise = new Promise(function (resolve) {
+        return resolve("¡Éxito!");
       });
+
+      if (this.articulo && this.und) {
+        var data = this.articulosventa.filter(function (res) {
+          return res.codigo == _this2.articulo;
+        });
+        var v = data.forEach(function (value) {
+          var total = parseInt(value.precio_venta) * _this2.und; //  th.total_venta = th.total_venta + total;
+
+
+          var newobj = {
+            nombre: value.nombre,
+            idarticulo: value.id,
+            cantidad: _this2.und,
+            codigo: value.codigo,
+            total: total,
+            precio_venta: value.precio_venta,
+            idventa: null,
+            descuento: null
+          };
+
+          _this2.datatable.push(newobj); // console.log(value)
+
+
+          _this2.articulo = '';
+          _this2.und = 1;
+
+          _this2.$refs.art.focus();
+        });
+      } else {
+        var msg = ["complete los datos requeridos", "error"];
+        this.notificacion(msg);
+      }
+    },
+    sendventa: function sendventa() {
+      var _this3 = this;
+
+      var mt = this;
+      axios.post("api/create-venta", {
+        idcliente: this.cliente,
+        tipo_comprobante: this.tipocomp,
+        num_comprobante: this.numcomp,
+        impuesto: this.impuesto,
+        descuento: this.descuento,
+        total_venta: this.total_venta,
+        estado: this.estado,
+        serie_comprobante: 'F',
+        user_id: this.iduser,
+        detalles: this.datatable
+      }).then(function (res) {
+        // this.articulos = res.data;
+        console.log(res);
+        mt.seddetalleventa();
+      })["finally"](function () {
+        return _this3.loading = false;
+      })["catch"](function (e) {});
+    },
+    seddetalleventa: function seddetalleventa() {
+      var _this4 = this;
+
+      axios.post("api/create-detalle-venta").then(function (res) {
+        // this.articulos = res.data;
+        console.log(res);
+        var msg = ["venta registrada", "success"];
+
+        _this4.notificacion(msg);
+      })["finally"](function () {
+        return _this4.loading = false;
+      })["catch"](function (e) {});
     }
   },
   mounted: function mounted() {
+    console.log(this.iduser);
     this.getarticulos();
+  },
+  watch: {
+    datatable: function datatable(val) {
+      var total = 0;
+      val.forEach(function (element) {
+        total += parseInt(element.precio_venta);
+      });
+      this.total_venta = total;
+      console.log(total);
+    }
   }
 });
 
@@ -39662,7 +39779,7 @@ var render = function() {
             _c(
               "transition",
               { attrs: { name: "component-fade", mode: "out-in" } },
-              [_c("venta-component")],
+              [_c("venta-component", { attrs: { iduser: _vm.id } })],
               1
             )
           ]
@@ -41547,6 +41664,7 @@ var render = function() {
                             [
                               _vm.tipobusq
                                 ? _c("v-text-field", {
+                                    ref: "art",
                                     attrs: {
                                       autofocus: "",
                                       clearable: "",
@@ -41562,15 +41680,23 @@ var render = function() {
                                     }
                                   })
                                 : _c("v-autocomplete", {
+                                    ref: "art",
                                     attrs: {
                                       autofocus: "",
                                       items: _vm.articulos,
                                       "item-text": "nombre",
-                                      "item-value": "id",
+                                      "item-value": "codigo",
                                       type: "text",
                                       name: "producto",
                                       label: "nombre clave articulo",
                                       "no-data-text": "articulo no encontrado"
+                                    },
+                                    model: {
+                                      value: _vm.articulo,
+                                      callback: function($$v) {
+                                        _vm.articulo = $$v
+                                      },
+                                      expression: "articulo"
                                     }
                                   })
                             ],
@@ -41582,12 +41708,30 @@ var render = function() {
                             { attrs: { cols: "6", sm: "2", md: "2" } },
                             [
                               _c("v-text-field", {
+                                ref: "und",
                                 attrs: {
                                   centered: "",
                                   type: "number",
                                   label: "cantidad",
                                   outlined: "",
                                   hint: "example of helper text only on focus"
+                                },
+                                on: {
+                                  keyup: function($event) {
+                                    if (
+                                      !$event.type.indexOf("key") &&
+                                      _vm._k(
+                                        $event.keyCode,
+                                        "enter",
+                                        13,
+                                        $event.key,
+                                        "Enter"
+                                      )
+                                    ) {
+                                      return null
+                                    }
+                                    return _vm.addarticulo($event)
+                                  }
                                 },
                                 model: {
                                   value: _vm.und,
@@ -41634,11 +41778,11 @@ var render = function() {
                                 {
                                   attrs: { mandatory: false },
                                   model: {
-                                    value: _vm.radios,
+                                    value: _vm.estado,
                                     callback: function($$v) {
-                                      _vm.radios = $$v
+                                      _vm.estado = $$v
                                     },
-                                    expression: "radios"
+                                    expression: "estado"
                                   }
                                 },
                                 [
@@ -41646,7 +41790,7 @@ var render = function() {
                                     attrs: {
                                       color: "success",
                                       label: "pago",
-                                      value: "radio-1"
+                                      value: 1
                                     }
                                   }),
                                   _vm._v(" "),
@@ -41654,7 +41798,7 @@ var render = function() {
                                     attrs: {
                                       color: "warning",
                                       label: "credito",
-                                      value: "radio-2"
+                                      value: 2
                                     }
                                   })
                                 ],
@@ -41720,9 +41864,18 @@ var render = function() {
                         fn: function(ref) {
                           var item = ref.item
                           return [
-                            _c("v-icon", { attrs: { color: "red" } }, [
-                              _vm._v("mdi-delete")
-                            ])
+                            _c(
+                              "v-icon",
+                              {
+                                attrs: { color: "red" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.remove(item)
+                                  }
+                                }
+                              },
+                              [_vm._v("mdi-delete")]
+                            )
                           ]
                         }
                       },
@@ -41739,14 +41892,71 @@ var render = function() {
                   _c(
                     "v-card-actions",
                     [
+                      _c("h3", {
+                        domProps: {
+                          textContent: _vm._s(
+                            "Total: " + _vm.eventoNum(_vm.total_venta)
+                          )
+                        }
+                      }),
+                      _vm._v(" "),
                       _c("v-spacer"),
                       _vm._v(" "),
-                      _c("v-btn", { attrs: { color: "red", text: "" } }, [
-                        _vm._v("Terminar")
-                      ])
+                      _c(
+                        "v-btn",
+                        {
+                          attrs: { color: "red", text: "" },
+                          on: { click: _vm.sendventa }
+                        },
+                        [_vm._v("Terminar")]
+                      )
                     ],
                     1
                   )
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-snackbar",
+            {
+              attrs: {
+                bottom: _vm.y === "bottom",
+                color: _vm.color,
+                left: _vm.x === "left",
+                "multi-line": _vm.mode === "multi-line",
+                right: _vm.x === "right",
+                timeout: _vm.timeout,
+                top: _vm.y === "top",
+                vertical: _vm.mode === "vertical"
+              },
+              model: {
+                value: _vm.snackbar,
+                callback: function($$v) {
+                  _vm.snackbar = $$v
+                },
+                expression: "snackbar"
+              }
+            },
+            [
+              _vm._v("\n      " + _vm._s(_vm.text) + "\n      "),
+              _c(
+                "v-btn",
+                {
+                  attrs: { dark: "", text: "" },
+                  on: {
+                    click: function($event) {
+                      _vm.snackbar = false
+                    }
+                  }
+                },
+                [
+                  _c("v-icon", { attrs: { color: "white" } }, [
+                    _vm._v("mdi-close-circle")
+                  ])
                 ],
                 1
               )

@@ -85,10 +85,7 @@
         $(document).ready(function() {
             
 
-    if (event.keyCode == 122) { // 122 es el código de F11
-      event.originalEvent.keyCode = 0;
-      window.alert("no dejo maximizar");
-    }
+
   
 });
     </script>

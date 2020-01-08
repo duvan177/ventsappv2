@@ -27,6 +27,13 @@ Route::post('delete-art', 'ArticuloController@artdelete');
 Route::post('personas', 'PersonaController@personas');
 //----------------------------------------------------------------------------------
 
+// ingreso de venta y de detalle de venta
+Route::post('create-venta', 'VentaController@getventa');
+Route::post('create-detalle-venta', 'VentaController@getdetalleventa');
+
+//------------------------------------------------------
+
+
 // apis de ingresos de articulos
 Route::post('create-ingreso', 'IngresoController@createingreso');
 Route::post('create-detalle-ingreso', 'DetalleingresoController@registrodetalle');

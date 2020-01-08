@@ -41,6 +41,7 @@
                   clearable
                   v-model="articulo"
                   type="number"
+                    ref="art"
                   label="Codigo articulo"
                 ></v-text-field>
                 <v-autocomplete
@@ -48,10 +49,12 @@
                   autofocus
                   :items="articulos"
                   item-text="nombre"
-                  item-value="id"
+                  item-value="codigo"
+                   v-model="articulo"
                   type="text"
                   name="producto"
                   label="nombre clave articulo"
+                  ref="art"
                   no-data-text="articulo no encontrado"
                 ></v-autocomplete>
               </v-col>
@@ -61,6 +64,8 @@
                   type="number"
                   label="cantidad"
                   v-model.number="und"
+                 ref="und"
+                  v-on:keyup.enter="addarticulo"
                   outlined
                   hint="example of helper text only on focus"
                 ></v-text-field>
@@ -77,9 +82,9 @@
                 ></v-select>
               </v-col>
               <v-col cols="6" sm="2" md="2">
-                <v-radio-group v-model="radios" :mandatory="false">
-                  <v-radio color="success" label="pago" value="radio-1"></v-radio>
-                  <v-radio color="warning" label="credito" value="radio-2"></v-radio>
+                <v-radio-group v-model="estado" :mandatory="false">
+                  <v-radio color="success" label="pago" :value="1"></v-radio>
+                  <v-radio color="warning" label="credito" :value="2"></v-radio>
                 </v-radio-group>
               </v-col>
             </v-row>
@@ -101,7 +106,7 @@
             class="elevation-1"
           >
             <template v-slot:item.action="{ item }">
-              <v-icon color="red">mdi-delete</v-icon>
+              <v-icon color="red"  @click="remove(item)">mdi-delete</v-icon>
             </template>
 
             <template v-slot:item.impuesto="{ item }">
@@ -109,26 +114,57 @@
             </template>
           </v-data-table>
           <v-card-actions>
+            <h3 v-text="'Total: '+eventoNum(total_venta)"></h3>
             <v-spacer></v-spacer>
 
-            <v-btn color="red" text>Terminar</v-btn>
+            <v-btn color="red" @click="sendventa" text>Terminar</v-btn>
           </v-card-actions>
         </v-card-text>
+    
       </v-card>
+      <v-snackbar
+        v-model="snackbar"
+        :bottom="y === 'bottom'"
+        :color="color"
+        :left="x === 'left'"
+        :multi-line="mode === 'multi-line'"
+        :right="x === 'right'"
+        :timeout="timeout"
+        :top="y === 'top'"
+        :vertical="mode === 'vertical'"
+      >
+        {{text}}
+        <v-btn dark text @click="snackbar = false">
+          <v-icon color="white">mdi-close-circle</v-icon>
+        </v-btn>
+      </v-snackbar>
     </v-container>
   </v-content>
 </template>
 
 <script>
 export default {
+   props: ['iduser'],
   data: () => ({
+ 
     loading: false,
+    snackbar: false,
+    x: "right",
+    y: "top",
+    color: "",
+    timeout: 4000,
+    mode: "",
+    text: "",
     //datos para gregar articulos a la tabla
     numcomp: 1001,
     tipocomp: "factura",
     cliente: 2,
-    und: "",
+    und: 1,
     //-------------------------------------------
+    impuesto:19,
+    descuento:0,
+    total_venta:0,
+    estado:1,
     clientes: [{ id: 2, nombre: "cliente" }],
     buscar: "",
     tipobusq: true,
@@ -145,17 +181,38 @@ export default {
 
       { text: "nombre", value: "nombre" },
       { text: "cantidad", value: "cantidad" },
-    
+
       { text: " Precio (und)", value: "precio_venta" },
-     
+
       { text: "Total", value: "total" },
-     
+
       { text: "Acciones", value: "action", align: "center" }
     ],
     articulo: "",
-    radios: "radio-1"
+   
   }),
   methods: {
+
+        remove(obj) {
+      var opcion = confirm("Desea eliminar registro de ingreso");
+      if (opcion) {
+        const index = this.datatable.indexOf(obj);
+        this.datatable.splice(index, 1);
+        let msg = ["eliminado", "success"];
+        this.notificacion(msg);
+      }
+    },
+       eventoNum(i) {
+      i = String(i).replace(/\D/g, "");
+
+      return i === "" ? i : Number(i).toLocaleString();
+    },
+
+    notificacion(msg) {
+      this.text = msg[0];
+      this.color = msg[1];
+      this.snackbar = true;
+    },
     getarticulos() {
       axios
         .post("api/set-articulos")
@@ -176,28 +233,87 @@ export default {
         .catch(e => {});
     },
     addarticulo() {
-      let data = this.articulosventa.filter(res => res.codigo == this.articulo);
+      let th = this;
+      let promise = new Promise(resolve => resolve("¡Éxito!"));
+      if (this.articulo && this.und) {
+        let data = this.articulosventa.filter(
+          res => res.codigo == this.articulo
+        );
 
-      //
-      let v = data.forEach(value => {
-        let total = value.precio_venta * this.und;
-        let newobj = {
-          nombre: value.nombre,
-          cantidad: this.und,
-          codigo: value.codigo,
-          total:total,
-          precio_venta:value.precio_venta,
-          idpersona:this.cliente,
-          tipocomp:this.tipocomp,
-          numcomp:this.numcomp
-        };
-        this.datatable.push(newobj);
-        // console.log(value)
-      });
+        let v = data.forEach(value => {
+          let total = parseInt(value.precio_venta) *this.und;
+          //  th.total_venta = th.total_venta + total;
+          let newobj = {
+            nombre: value.nombre,
+            idarticulo: value.id,
+            cantidad: this.und,
+            codigo: value.codigo,
+            total: total,
+            precio_venta: value.precio_venta,
+            idventa:null,
+            descuento:null
+          };
+          this.datatable.push(newobj);
+          // console.log(value)
+          this.articulo = '';
+          this.und = 1;
+          this.$refs.art.focus();
+        });
+
+      } else {
+        let msg = ["complete los datos requeridos", "error"];
+        this.notificacion(msg);
+      }
+    },
+    sendventa() {
+      let mt = this;
+      axios
+        .post("api/create-venta", {
+          idcliente:this.cliente,
+          tipo_comprobante:this.tipocomp,
+          num_comprobante:this.numcomp,
+          impuesto:this.impuesto,
+          descuento:this.descuento,
+          total_venta:this.total_venta,
+          estado:this.estado,
+          serie_comprobante:'F',
+          user_id:this.iduser,
+          detalles:this.datatable
+          })
+        .then(res => {
+          // this.articulos = res.data;
+          console.log(res);
+          mt.seddetalleventa();
+        })
+        .finally(() => (this.loading = false))
+        .catch(e => {});
+    },
+    seddetalleventa() {
+      axios
+        .post("api/create-detalle-venta")
+        .then(res => {
+          // this.articulos = res.data;
+          console.log(res);
+          let msg = ["venta registrada", "success"];
+          this.notificacion(msg);
+        })
+        .finally(() => (this.loading = false))
+        .catch(e => {});
     }
   },
   mounted() {
+      console.log( this.iduser)
     this.getarticulos();
+  },
+  watch:{
+    datatable(val){
+      let total = 0;
+      val.forEach(element => {
+         total += parseInt(element.precio_venta);
+      });
+      this.total_venta = total;
+      console.log(total);
+    }
   }
 };
 </script>

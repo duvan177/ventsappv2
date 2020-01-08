@@ -367,7 +367,7 @@ export default {
         .post("api/set-articulos")
         .then(res => {
           this.productos = res.data;
-          // console.log(res);
+           console.log(res);
         })
         .finally(() => (this.loading = false))
         .catch(e => {});

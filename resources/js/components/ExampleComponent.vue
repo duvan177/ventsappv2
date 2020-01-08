@@ -124,7 +124,7 @@
 
     <template  v-if="menu == 0">
     <transition name="component-fade" mode="out-in">
- <venta-component></venta-component>
+ <venta-component v-bind:iduser="id" ></venta-component>
       </transition>
        
       </template>
@@ -242,10 +242,9 @@
 
 <script>
   export default {
-    props: {
-      source: String,
-    },
+     props: ['id'],
     data: () => ({
+     iduser : null,
       menu:0,
       dialog: false,
       drawer: null,
@@ -285,7 +284,8 @@
       },
     },
     mounted(){
-      console.log( screen.width)
+      console.log(this.id)
+      this.iduser = this.id;
       if (screen.width <= 600) {
         this.resp = true;
       }
