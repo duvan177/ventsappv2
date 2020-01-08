@@ -156,7 +156,7 @@ export default {
     mode: "",
     text: "",
     //datos para gregar articulos a la tabla
-    numcomp: 1001,
+    numcomp: '',
     tipocomp: "factura",
     cliente: 2,
     und: 1,
@@ -283,37 +283,63 @@ export default {
         .then(res => {
           // this.articulos = res.data;
           console.log(res);
-          mt.seddetalleventa();
-        })
-        .finally(() => (this.loading = false))
-        .catch(e => {});
-    },
-    seddetalleventa() {
-      axios
-        .post("api/create-detalle-venta")
-        .then(res => {
-          // this.articulos = res.data;
-          console.log(res);
-          let msg = ["venta registrada", "success"];
+          this.datatable =[];
+             mt.numcomp = parseInt(res.data.numero) + 1;
+              let msg = ["venta registrada", "success"];
           this.notificacion(msg);
         })
         .finally(() => (this.loading = false))
         .catch(e => {});
-    }
+    },
+         seddetalleventa() {
+      axios
+        .post("api/create-detalle-venta")
+        .then(res => {
+          // this.articulos = res.data;
+         console.log(res)
+    
+           
+           this.numcomp = parseInt( res.data) + 1;
+         
+        })
+        .finally(() => (this.loading = false))
+        .catch(e => {});
+    },
+
+
   },
   mounted() {
+      if (this.numcomp == '') {
+        this.numcomp = 1001;
+      }
       console.log( this.iduser)
     this.getarticulos();
+      if (localStorage.venta2) {
+      // this.consulta = atob(JSON.parse(localStorage.getItem("venta")));
+      let venta2 = localStorage.getItem("venta2");
+      this.datatable = JSON.parse(venta2);
+    }
+ 
+   
+       this.seddetalleventa();
+    
+  
+     
+    
+ 
   },
   watch:{
     datatable(val){
       let total = 0;
+        localStorage.venta2 = JSON.stringify(val);
       val.forEach(element => {
          total += parseInt(element.precio_venta);
       });
       this.total_venta = total;
       console.log(total);
-    }
+    },
+ 
+
   }
 };
 </script>

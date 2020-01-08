@@ -3231,7 +3231,7 @@ __webpack_require__.r(__webpack_exports__);
       mode: "",
       text: "",
       //datos para gregar articulos a la tabla
-      numcomp: 1001,
+      numcomp: '',
       tipocomp: "factura",
       cliente: 2,
       und: 1,
@@ -3366,7 +3366,11 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (res) {
         // this.articulos = res.data;
         console.log(res);
-        mt.seddetalleventa();
+        _this3.datatable = [];
+        mt.numcomp = parseInt(res.data.numero) + 1;
+        var msg = ["venta registrada", "success"];
+
+        _this3.notificacion(msg);
       })["finally"](function () {
         return _this3.loading = false;
       })["catch"](function (e) {});
@@ -3377,21 +3381,32 @@ __webpack_require__.r(__webpack_exports__);
       axios.post("api/create-detalle-venta").then(function (res) {
         // this.articulos = res.data;
         console.log(res);
-        var msg = ["venta registrada", "success"];
-
-        _this4.notificacion(msg);
+        _this4.numcomp = parseInt(res.data) + 1;
       })["finally"](function () {
         return _this4.loading = false;
       })["catch"](function (e) {});
     }
   },
   mounted: function mounted() {
+    if (this.numcomp == '') {
+      this.numcomp = 1001;
+    }
+
     console.log(this.iduser);
     this.getarticulos();
+
+    if (localStorage.venta2) {
+      // this.consulta = atob(JSON.parse(localStorage.getItem("venta")));
+      var venta2 = localStorage.getItem("venta2");
+      this.datatable = JSON.parse(venta2);
+    }
+
+    this.seddetalleventa();
   },
   watch: {
     datatable: function datatable(val) {
       var total = 0;
+      localStorage.venta2 = JSON.stringify(val);
       val.forEach(function (element) {
         total += parseInt(element.precio_venta);
       });

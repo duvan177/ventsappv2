@@ -19,13 +19,19 @@ class VentaController extends Controller
             detalleventa::create($value);
          }
 
-
-       return response()->json();
+         $numcomp = venta::max('num_comprobante');
+         $data = ['msg'=>'registrado con exito','numero'=>$numcomp];
+       return response()->json($data);
    }
 
    public function getdetalleventa(Request $request){
-
-    return response()->json('detalle venta');
+      $numcomp = venta::max('num_comprobante');
+      if ($numcomp) {
+         return response()->json($numcomp);
+      }else {
+         return response()->json('1001');
+      }
+   
        }
        
 

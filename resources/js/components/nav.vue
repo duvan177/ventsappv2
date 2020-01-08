@@ -397,6 +397,7 @@ export default {
         })
         .catch(e => {});
     },
+ 
     getpersonas() {
       axios
         .post("api/personas")
@@ -439,7 +440,7 @@ export default {
     if (!this.persona) {
       this.dialog = true;
     }
-
+   
     this.getpersonas();
     this.articulos();
   }
