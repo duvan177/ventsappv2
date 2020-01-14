@@ -37,7 +37,7 @@ Route::post('create-detalle-venta', 'VentaController@getdetalleventa');
 // apis de ingresos de articulos
 Route::post('create-ingreso', 'IngresoController@createingreso');
 Route::post('create-detalle-ingreso', 'DetalleingresoController@registrodetalle');
-
+Route::post('all-ingresos', 'IngresoController@setingresos');
 
 //----------------------------------------------------------------------------------
 Route::post('authenticate', 'LoginController@authenticate')->name('authenticate');

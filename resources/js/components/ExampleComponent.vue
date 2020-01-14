@@ -140,7 +140,13 @@
      <alimentos-component></alimentos-component>
     </transition>
  </template>
+   <template  v-if="menu == 4">
+    <transition name="component-fade" mode="out-in">
+     <dataingresos-component></dataingresos-component>
+    </transition>
+ </template>
  
+
 
 
 
@@ -262,10 +268,24 @@
           model: false,
           children: [
             { text: 'Almacen' ,nun:3},
-            { text: 'Panadera' ,nun:4 },
-            { text: 'Productos dados de baja'  ,nun:5},
+          
+            { text: 'Panadera' ,nun:''},
+            { text: 'Productos dados de baja'  ,nun:''},
          
             { text: 'Other contacts' ,nun:1 },
+          ],
+        },
+            {
+          icon: 'mdi-chevron-up',
+          'icon-alt': 'mdi-chevron-down',
+          text: 'Informes',
+           nun:2,
+          model: false,
+          children: [
+            { text: 'Ingresos' ,nun:4},
+          
+            { text: 'Ventas' ,nun:'' },
+       
           ],
         },
         { icon: 'mdi-settings', text: 'Configuracion' },

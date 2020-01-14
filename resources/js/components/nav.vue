@@ -20,7 +20,7 @@
           <v-spacer></v-spacer>
           <v-text-field label="Numero Comprobante" v-model="ncomp" filled rounded readonly dense></v-text-field>
         </v-card-title>
-       
+
         <v-card-text transition="scale-transition" v-if="persona">
           <v-container>
             <v-row>
@@ -253,8 +253,8 @@ export default {
       y: "top",
       // --------------------------
       impuest: "",
-      ncomp: "z",
-      persona: 26,
+      ncomp: "",
+      persona: null,
       card1: false,
       btncard: false,
       personas: [],
@@ -312,16 +312,26 @@ export default {
       if (this.datatable.length >= 1) {
         axios
           .post("api/create-detalle-ingreso", {
-            arraydata: this.datatable
+            arraydata: this.datatable,
+            idproveedor: this.persona,
+            tipo_comprobante: this.comprobante,
+            serie_comprobante: this.ncomp,
+            num_comprobante: this.ncomp,
+            impuesto: this.impuest,
+            estado: 2
           })
           .then(res => {
-            // this.productos = res.data;
-            console.log(res);
-          })
-          .finally(() => {
-            this.loading = false;
+               this.loading = false;
             let msg = ["ingreso finalizado con exito", "success"];
             this.notificacion(msg);
+            this.datatable = [];
+            this.persona = null;
+            this.comprobante = null;
+            this.ncomp = null;
+            this.proveedor = '';
+          })
+          .finally(() => {
+         
           })
           .catch(e => {});
       } else {
@@ -350,7 +360,7 @@ export default {
           precio_venta: this.p_venta,
           impuesto: this.impuesto,
           total: total,
-          idingreso: this.persona,
+          idingreso: null,
           idarticulo: this.idproducto
         });
 
@@ -367,7 +377,7 @@ export default {
         .post("api/set-articulos")
         .then(res => {
           this.productos = res.data;
-           console.log(res);
+          console.log(res);
         })
         .finally(() => (this.loading = false))
         .catch(e => {});
@@ -380,12 +390,12 @@ export default {
       this.btncard = true;
       axios
         .post("api/create-ingreso", {
-          idproveedor: this.persona,
-          tipo_comprobante: this.comprobante,
-          serie_comprobante: this.ncomp,
-          num_comprobante: this.ncomp,
-          impuesto: this.impuest,
-          estado: 2
+          // idproveedor: this.persona,
+          // tipo_comprobante: this.comprobante,
+          // serie_comprobante: this.ncomp,
+          // num_comprobante: this.ncomp,
+          // impuesto: this.impuest,
+          // estado: 2
         })
         .then(res => {
           console.log(res);
@@ -397,7 +407,7 @@ export default {
         })
         .catch(e => {});
     },
- 
+
     getpersonas() {
       axios
         .post("api/personas")
@@ -415,11 +425,11 @@ export default {
     },
 
     persona(val) {
-      if (val) {
-        let data = this.personas.filter(res => (res.id = val));
+    
+        let data = this.personas.filter(res => (res.idpersona == val));
         this.proveedor = data[0].nombre;
-        // console.log(data);
-      }
+    
+      
     },
     articulo(val) {
       if (val) {
@@ -440,7 +450,7 @@ export default {
     if (!this.persona) {
       this.dialog = true;
     }
-   
+
     this.getpersonas();
     this.articulos();
   }

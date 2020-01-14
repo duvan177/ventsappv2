@@ -27,6 +27,16 @@
               <v-col cols="6" sm="6" md="4">
                 <v-text-field readonly v-model="numcomp" label="N. Comprobante" id="id"></v-text-field>
               </v-col>
+                  <v-col cols="6" sm="6" md="4">
+                      <v-select
+                  v-model="cliente"
+                  item-text="nombre"
+                  item-value="id"
+                  :items="clientes"
+                  label="persona"
+                  required
+                ></v-select>
+                  </v-col>
             </div>
             <v-row>
               <v-col cols="2" md="1">
@@ -67,20 +77,27 @@
                  ref="und"
                   v-on:keyup.enter="addarticulo"
                   outlined
+                
                   hint="example of helper text only on focus"
                 ></v-text-field>
               </v-col>
 
-              <v-col cols="6" sm="3">
-                <v-select
-                  v-model="cliente"
-                  item-text="nombre"
-                  item-value="id"
-                  :items="clientes"
-                  label="persona"
-                  required
-                ></v-select>
+              <v-col cols="6" sm="2">
+                <v-text-field
+                  centered
+                  type="number"
+                  label="descuento"
+                  v-model.number="descuento"
+                 ref="des"
+                  :readonly="desc"
+                  outlined
+                   :append-icon="'mdi-lock'"
+                   filled
+                    @click:append="blokdesc()"
+                  hint="ingrese contraseña de administrador"
+                ></v-text-field>
               </v-col>
+                
               <v-col cols="6" sm="2" md="2">
                 <v-radio-group v-model="estado" :mandatory="false">
                   <v-radio color="success" label="pago" :value="1"></v-radio>
@@ -117,7 +134,7 @@
             <h3 v-text="'Total: '+eventoNum(total_venta)"></h3>
             <v-spacer></v-spacer>
 
-            <v-btn color="red" @click="sendventa" text>Terminar</v-btn>
+            <v-btn :loading="send" color="red" @click="sendventa" text>Terminar</v-btn>
           </v-card-actions>
         </v-card-text>
     
@@ -146,7 +163,7 @@
 export default {
    props: ['iduser'],
   data: () => ({
- 
+    desc:true,
     loading: false,
     snackbar: false,
     x: "right",
@@ -155,6 +172,7 @@ export default {
     timeout: 4000,
     mode: "",
     text: "",
+    send:false,
     //datos para gregar articulos a la tabla
     numcomp: '',
     tipocomp: "factura",
@@ -193,6 +211,10 @@ export default {
   }),
   methods: {
 
+    blokdesc(){
+        alert('desbloquear')
+    },
+
         remove(obj) {
       var opcion = confirm("Desea eliminar registro de ingreso");
       if (opcion) {
@@ -225,7 +247,7 @@ export default {
 
       axios
         .post("api/articulos")
-        .then(res => {
+        .then(res => { 
           this.articulosventa = res.data;
           // console.log(res);
         })
@@ -234,7 +256,7 @@ export default {
     },
     addarticulo() {
       let th = this;
-      let promise = new Promise(resolve => resolve("¡Éxito!"));
+    
       if (this.articulo && this.und) {
         let data = this.articulosventa.filter(
           res => res.codigo == this.articulo
@@ -266,6 +288,9 @@ export default {
       }
     },
     sendventa() {
+      if (this.datatable.length >=1) {
+        
+        this.send = true;
       let mt = this;
       axios
         .post("api/create-venta", {
@@ -288,8 +313,13 @@ export default {
               let msg = ["venta registrada", "success"];
           this.notificacion(msg);
         })
-        .finally(() => (this.loading = false))
+        .finally(() => (this.loading = false,this.send = false))
         .catch(e => {});
+      }else{
+         let msg = ["Ingrese articulos y continue", "error"];
+        this.notificacion(msg);
+      }        
+
     },
          seddetalleventa() {
       axios
@@ -333,7 +363,7 @@ export default {
       let total = 0;
         localStorage.venta2 = JSON.stringify(val);
       val.forEach(element => {
-         total += parseInt(element.precio_venta);
+         total += parseInt(element.precio_venta) * element.cantidad;
       });
       this.total_venta = total;
       console.log(total);

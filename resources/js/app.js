@@ -37,6 +37,11 @@ Vue.component('panaderia-component', require('./components/almacen/panaderia.vue
 Vue.component('venta-component', require('./components/ventas/VentasComponet.vue').default);
 // -------------------------------------------------------------------
 
+//modulo de tablas de registro de ventas y usuarios
+Vue.component('dataingresos-component', require('./components/datatablas/DataIngresosComponet.vue').default);
+//----------------------------------------------------------------------------
+
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

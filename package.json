@@ -25,6 +25,8 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "echarts": "^4.6.0",
+        "v-charts": "^1.19.0",
         "vuetify": "^2.1.15"
     }
 }
