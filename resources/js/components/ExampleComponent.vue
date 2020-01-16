@@ -145,6 +145,11 @@
      <dataingresos-component></dataingresos-component>
     </transition>
  </template>
+    <template  v-if="menu == 5">
+    <transition name="component-fade" mode="out-in">
+     <dataventas-component></dataventas-component>
+    </transition>
+ </template>
  
 
 
@@ -284,7 +289,7 @@
           children: [
             { text: 'Ingresos' ,nun:4},
           
-            { text: 'Ventas' ,nun:'' },
+            { text: 'Ventas' ,nun:5 },
        
           ],
         },

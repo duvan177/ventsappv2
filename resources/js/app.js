@@ -37,10 +37,10 @@ Vue.component('panaderia-component', require('./components/almacen/panaderia.vue
 Vue.component('venta-component', require('./components/ventas/VentasComponet.vue').default);
 // -------------------------------------------------------------------
 
-//modulo de tablas de registro de ventas y usuarios
+//modulo de tablas de registro de ventas y ingresos
 Vue.component('dataingresos-component', require('./components/datatablas/DataIngresosComponet.vue').default);
+Vue.component('dataventas-component', require('./components/datatablas/DataVentasComponet.vue').default);
 //----------------------------------------------------------------------------
-
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

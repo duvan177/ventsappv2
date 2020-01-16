@@ -23,8 +23,6 @@ class IngresoController extends Controller
         $ingreso = ingreso::leftJoin('detalle_ingreso','ingreso.id','=','detalle_ingreso.idingreso')
         ->orderBy('ingreso.created_at', 'desc')
         ->get();
-
-       
         $ingreso->map(function($ingreso){
              $articulo = articulo::find($ingreso->idarticulo);
             $ingreso->articulo = $articulo;
@@ -34,11 +32,6 @@ class IngresoController extends Controller
            $persona = persona::where('idpersona',$ingreso->idproveedor)->first();
            $ingreso->proveedor = $persona;
        });
-
-        
-
-
-
         $data = 'ingresos';
         return response()->json($ingreso, 200);
     }

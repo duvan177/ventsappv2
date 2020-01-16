@@ -30,6 +30,8 @@ Route::post('personas', 'PersonaController@personas');
 // ingreso de venta y de detalle de venta
 Route::post('create-venta', 'VentaController@getventa');
 Route::post('create-detalle-venta', 'VentaController@getdetalleventa');
+Route::post('all-ventas', 'VentaController@sendventas');
+
 
 //------------------------------------------------------
 

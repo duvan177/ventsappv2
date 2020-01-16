@@ -5,6 +5,8 @@ require __DIR__ . '/ticket/autoload.php';
 use App\venta;
 use App\detalleventa;
 use App\User;
+use App\articulo;
+use App\persona;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mike42\Escpos\Printer;
@@ -101,6 +103,29 @@ $numcomp = venta::max('num_comprobante');
          return response()->json('1001');
       }
    
+       }
+
+      public function sendventas(){
+         $ventas = venta::join('detalle_venta','detalle_venta.idventa','=','venta.id')
+         ->select('detalle_venta.*','venta.*')
+         ->get();
+
+         $ventas->map(function($ventas){
+             $articulo = articulo::find($ventas->idarticulo);
+            $ventas->articulo = $articulo;
+        });
+
+        $ventas->map(function($ventas){
+             $usuario = User::find($ventas->user_id);
+            $ventas->usuario = $usuario;
+        });
+        $ventas->map(function($ventas){
+             $cliente = persona::where('idpersona',$ventas->idcliente)->first();
+            $ventas->cliente = $cliente;
+        });
+         
+         return response()->json($ventas);
+
        }
 
    
