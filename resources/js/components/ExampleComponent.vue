@@ -3,8 +3,7 @@
     <v-navigation-drawer
       v-model="drawer"
       :clipped="$vuetify.breakpoint.lgAndUp"
-     
-       
+        primary
       app
     >
       <v-list nav dense>

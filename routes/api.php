@@ -41,5 +41,10 @@ Route::post('create-ingreso', 'IngresoController@createingreso');
 Route::post('create-detalle-ingreso', 'DetalleingresoController@registrodetalle');
 Route::post('all-ingresos', 'IngresoController@setingresos');
 
+// busqueda avanzada
+Route::post('busqueda-ingreso', 'IngresoController@busquedaingreso');
+Route::post('busqueda-ingreso-fecha', 'IngresoController@setingresofecha');
+// ------------------------------------
+
 //----------------------------------------------------------------------------------
 Route::post('authenticate', 'LoginController@authenticate')->name('authenticate');

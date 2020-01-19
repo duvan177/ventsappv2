@@ -57,8 +57,11 @@
                   hint="example of helper text only on focus"
                 ></v-text-field>
               </v-col>
+                <v-col cols="6" sm="2" md="2">
+           
+              </v-col>
 
-              <v-col cols="12" sm="6">
+              <v-col cols="12" sm="6" lg="3">
                 <v-text-field
                   type="number"
                   outlined
@@ -68,7 +71,7 @@
                   prepend-inner-icon="mdi-cash-usd"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="12" sm="6" lg="3">
                 <v-text-field
                   type="number"
                   outlined
@@ -78,7 +81,7 @@
                   prepend-inner-icon="mdi-cash-usd"
                 ></v-text-field>
               </v-col>
-              <v-col cols="6" sm="6">
+              <v-col cols="3" sm="3">
                 <v-select :items="['0-17', '18-29', '30-54', '54+']" label="Age*" required></v-select>
               </v-col>
             </v-row>
@@ -136,7 +139,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
 
-            <v-btn color="red" text @click="sendingreso()">Terminar</v-btn>
+            <v-btn :loading="btnsend" color="red" text @click="sendingreso()">Terminar</v-btn>
           </v-card-actions>
         </v-card-text>
 
@@ -182,7 +185,8 @@
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
                   <v-text-field
-                    v-model="impuest"
+                  readonly
+                    v-model="impuesto"
                     label="inpuesto"
                     hint="iva que se le impone al articulo"
                   ></v-text-field>
@@ -198,7 +202,7 @@
               text
               @click="[dialog = false , persona = '',proveedor ='' , ncomp  ='' ]"
             >cerrar</v-btn>
-            <v-btn color="blue darken-1" text :loading="btncard" @click="createingreso()">Crear</v-btn>
+            <v-btn color="blue darken-1" text  @click="createingreso()">Crear</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -260,6 +264,7 @@ export default {
       personas: [],
       dialog: false,
       alert: false,
+      btnsend:false,
       tipocomp: [
         { id: 1, name: "factura" },
         { id: 2, name: "recibo de caja" },
@@ -309,6 +314,7 @@ export default {
       this.articulo = "";
     },
     sendingreso() {
+      this.btnsend = true;
       if (this.datatable.length >= 1) {
         axios
           .post("api/create-detalle-ingreso", {
@@ -317,21 +323,22 @@ export default {
             tipo_comprobante: this.comprobante,
             serie_comprobante: this.ncomp,
             num_comprobante: this.ncomp,
-            impuesto: this.impuest,
+            impuesto: this.impuesto,
             estado: 2
           })
           .then(res => {
                this.loading = false;
             let msg = ["ingreso finalizado con exito", "success"];
             this.notificacion(msg);
-            this.datatable = [];
+           
+          })
+          .finally(() => {
+             this.datatable = [];
             this.persona = null;
             this.comprobante = null;
             this.ncomp = null;
             this.proveedor = '';
-          })
-          .finally(() => {
-         
+           this.btnsend = false;
           })
           .catch(e => {});
       } else {
@@ -386,26 +393,15 @@ export default {
       alert(item);
     },
     createingreso() {
-      this.card1 = true;
-      this.btncard = true;
-      axios
-        .post("api/create-ingreso", {
-          // idproveedor: this.persona,
-          // tipo_comprobante: this.comprobante,
-          // serie_comprobante: this.ncomp,
-          // num_comprobante: this.ncomp,
-          // impuesto: this.impuest,
-          // estado: 2
-        })
-        .then(res => {
-          console.log(res);
-        })
-        .finally(() => {
-          this.dialog = false;
-          this.card1 = false;
-          this.btncard = false;
-        })
-        .catch(e => {});
+      if (this.persona,this.ncomp,this.comprobante) {
+         this.card1 = false;
+      this.btncard = false;
+      this.dialog=false;
+      }else{
+        let msg = ['ingrese los datos requeridos', 'warning'];
+        this.notificacion(msg);
+      }
+
     },
 
     getpersonas() {
@@ -425,9 +421,11 @@ export default {
     },
 
     persona(val) {
-    
-        let data = this.personas.filter(res => (res.idpersona == val));
+        if (val) {
+           let data = this.personas.filter(res => (res.idpersona == val));
         this.proveedor = data[0].nombre;
+        }
+       
     
       
     },

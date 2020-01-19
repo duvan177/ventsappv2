@@ -54,9 +54,11 @@
           <div class="row">
             <v-col cols="12" md="6">Detalle de ingresos</v-col>
             <v-col cols="12" md="3">
-              <v-btn @click="busq=true" class="ma-2" text icon>
+              <v-btn @click="busq=true" text icon>
                 <v-icon>mdi-magnify</v-icon>avanzada
               </v-btn>
+         
+              <v-btn @click="restablecer" :disabled="btnlupa" light text > <v-icon color="red" >mdi-refresh</v-icon> </v-btn>
             </v-col>
             <v-col cols="12" md="3">
               <v-text-field
@@ -133,13 +135,13 @@
           </v-toolbar>
           <v-tabs vertical>
             <v-tab>
-              <v-icon left>mdi-account</v-icon>Rango
+              <v-icon left>mdi-calendar-range</v-icon>Rango
             </v-tab>
             <v-tab>
-              <v-icon left>mdi-lock</v-icon>fecha
+              <v-icon left>mdi-calendar-today</v-icon>fecha
             </v-tab>
             <v-tab>
-              <v-icon left>mdi-access-point</v-icon>Option 3
+              <v-icon left>mdi-calendar-multiple-check</v-icon>mes
             </v-tab>
 
             <v-tab-item>
@@ -151,7 +153,7 @@
                         ref="menu1"
                         v-model="menu1"
                         :close-on-content-click="false"
-                        :return-value.sync="date"
+                        :return-value.sync="date1"
                         transition="scale-transition"
                       >
                         <template v-slot:activator="{ on }">
@@ -166,9 +168,11 @@
                         <v-date-picker v-model="date1" no-title scrollable locale="es-co">
                           <v-spacer></v-spacer>
                           <v-btn text color="primary" @click="menu1 = false">Cancel</v-btn>
-                          <v-btn text color="primary" @click="$refs.menu1.save(date)">OK</v-btn>
+                          <v-btn text color="primary" @click="$refs.menu1.save(date1)">OK</v-btn>
                         </v-date-picker>
                       </v-menu>
+                   
+                    
                     </v-col>
 
                     <v-col cols="12" md="4">
@@ -176,7 +180,7 @@
                         ref="menu2"
                         v-model="menu2"
                         :close-on-content-click="false"
-                        :return-value.sync="date"
+                        :return-value.sync="date2"
                         transition="scale-transition"
                       >
                         <template v-slot:activator="{ on }">
@@ -188,20 +192,52 @@
                             v-on="on"
                           ></v-text-field>
                         </template>
-                        <v-date-picker v-model="date2" no-title scrollable locale="es-co">
+                        <v-date-picker :min="date1" v-model="date2" no-title scrollable locale="es-co">
                           <v-spacer></v-spacer>
                           <v-btn text color="primary" @click="menu2 = false">Cancel</v-btn>
-                          <v-btn text color="primary" @click="$refs.menu2.save(date)">OK</v-btn>
+                          <v-btn text color="primary" @click="$refs.menu2.save(date2)">OK</v-btn>
                         </v-date-picker>
                       </v-menu>
                     </v-col>
+                    <v-col cols="12" md="4"> <v-btn color="success" :loading="btn2lodig" @click="shearcavance" ><v-icon>mdi-magnify</v-icon> </v-btn></v-col>
                   </div>
                 </v-card-text>
               </v-card>
             </v-tab-item>
             <v-tab-item>
               <v-card flat>
-                <v-card-text></v-card-text>
+                <v-card-text>
+                  <div class="row">
+
+                
+                   <v-col cols="12" md="4">
+                      <v-menu
+                        ref="menu2"
+                        v-model="menu3"
+                        :close-on-content-click="false"
+                        :return-value.sync="date3"
+                        transition="scale-transition"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-text-field
+                            v-model="date3"
+                            label="fecha fin"
+                            prepend-icon="mdi-calendar"
+                            readonly
+                            v-on="on"
+                          ></v-text-field>
+                        </template>
+                        <v-date-picker  v-model="date3" no-title scrollable locale="es-co">
+                          <v-spacer></v-spacer>
+                          <v-btn text color="primary" @click="menu3 = false">Cancel</v-btn>
+                          <v-btn text color="primary" @click="$refs.menu2.save(date3)">OK</v-btn>
+                        </v-date-picker>
+                      </v-menu>
+                      
+                    </v-col>
+                       <v-col cols="12" md="4"> <v-btn color="success" :loading="btn2lodig" @click="shearfecha" ><v-icon>mdi-magnify</v-icon> </v-btn></v-col>
+                         </div>
+                </v-card-text>
               </v-card>
             </v-tab-item>
             <v-tab-item>
@@ -242,11 +278,15 @@ export default {
     //-------------------------------------------
     // datos para la busqueda avanzada
     busq: false,
+    btn2lodig :false,
     date1: new Date().toISOString().substr(0, 10),
      date2: new Date().toISOString().substr(0, 10),
+     date3: new Date().toISOString().substr(0, 10),
     menu1: false,
+    menu3:false,
     modal: false,
     menu2: false,
+    btnlupa:true,
     // ---------------------------------------------
     lgtable: false,
     newdatatable: [],
@@ -273,11 +313,64 @@ export default {
 
       //   { text: "Acciones", value: "action", align: "center" }
     ],
-    labels: [],
-    value: [200, 675, 410, 390, 310, 460, 250, 240],
-    values: []
+    
   }),
   methods: {
+
+    shearcavance(){
+      this.btn2lodig = true;
+      axios.post('api/busqueda-ingreso',
+      {inicio:this.date1,
+        fin:this.date2
+      })
+      .then(res => {
+        // console.log(res)
+        // this.datatable = res.data;
+        if (res.data.length>=1) {
+             this.newdatatable = res.data;
+        }else{
+          let msg = ['ingresos no encontrados con las fechas buscasdas','error'];
+          this.notificacion(msg);
+        }
+     
+         this.btnlupa = false;
+      }).finally(()=>{this.btn2lodig = false; this.busq = false})
+      .catch(err => {
+        console.error(err); 
+      })
+
+    },
+    shearfecha(){
+            this.btn2lodig = true;
+      axios.post('api/busqueda-ingreso-fecha',
+      {fecha:this.date3,
+       
+      })
+      .then(res => {
+        // console.log(res)
+        // this.datatable = res.data;
+        if (res.data.length>=1) {
+             this.newdatatable = res.data;
+        }else{
+          let msg = ['ingresos no encontrados con las fechas buscasdas','error'];
+          this.notificacion(msg);
+        }
+     
+         this.btnlupa = false;
+      }).finally(()=>{this.btn2lodig = false; this.busq = false})
+      .catch(err => {
+        console.error(err); 
+      })
+    },
+
+
+      restablecer(){
+         
+          this.btnlupa = true;
+          this.chartData.rows = [];
+           this.getimgresos();
+      },
+
     blokdesc() {
       alert("desbloquear");
     },
@@ -328,7 +421,7 @@ export default {
       });
       let data = { date: fecha.substring(0, 10), valor: total };
       this.chartData.rows.push(data);
-      console.log(obj);
+      // console.log(obj);
     },
     showtotal(obj) {
       let total = 0;
@@ -347,13 +440,14 @@ export default {
       this.snackbar = true;
     },
     getimgresos() {
+      
       this.lgtable = true;
       axios
         .post("api/all-ingresos")
         .then(res => {
           this.datatable = res.data;
 
-          console.log(res);
+          // console.log(res);
         })
         .finally(() => {
           this.loading = false;
@@ -395,7 +489,7 @@ export default {
       });
       this.totalingreso = total;
       this.cantidadart = cant;
-      console.log(total);
+      // console.log(total);
     }
   }
 };
