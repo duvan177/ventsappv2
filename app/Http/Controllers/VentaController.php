@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 require __DIR__ . '/ticket/autoload.php';
 use App\venta;
 use App\detalleventa;
+
+use App\detalleingreso;
 use App\User;
 use App\articulo;
 use App\persona;
@@ -107,25 +109,39 @@ $numcomp = venta::max('num_comprobante');
 
       public function sendventas(){
          $ventas = venta::join('detalle_venta','detalle_venta.idventa','=','venta.id')
-         ->select('detalle_venta.*','venta.*')
+         ->select('detalle_venta.id','detalle_venta.idarticulo','detalle_venta.cantidad','detalle_venta.cantidad','detalle_venta.precio_venta',
+         'detalle_venta.descuento','detalle_venta.created_at','venta.idcliente','venta.user_id','venta.tipo_comprobante','venta.serie_comprobante','venta.num_comprobante',
+         'venta.impuesto','venta.descuento','venta.total_venta','venta.estado','venta.updated_at')
+         ->orderBy('detalle_venta.created_at', 'desc')
          ->get();
 
-         $ventas->map(function($ventas){
-             $articulo = articulo::find($ventas->idarticulo);
-            $ventas->articulo = $articulo;
-        });
-
-        $ventas->map(function($ventas){
-             $usuario = User::find($ventas->user_id);
-            $ventas->usuario = $usuario;
-        });
-        $ventas->map(function($ventas){
-             $cliente = persona::where('idpersona',$ventas->idcliente)->first();
-            $ventas->cliente = $cliente;
-        });
+        $newventas = $this->subconsultas($ventas);
+     
          
-         return response()->json($ventas);
+         return response()->json($newventas);
 
+       }
+
+       public function subconsultas($ventas){
+         $ventas->map(function($ventas){
+            $articulo = articulo::find($ventas->idarticulo);
+           $ventas->articulo = $articulo;
+       });
+
+       $ventas->map(function($ventas){
+            $usuario = User::find($ventas->user_id);
+           $ventas->usuario = $usuario;
+       });
+       $ventas->map(function($ventas){
+            $cliente = persona::where('idpersona',$ventas->idcliente)->first();
+           $ventas->cliente = $cliente;
+       });
+       $ventas->map(function($ventas){
+        $maxid = detalleingreso::where('idarticulo',$ventas->articulo->id)->max('id');
+        $precio_compra = detalleingreso::where('id',$maxid)->first();
+       $ventas->precio_compra = $precio_compra;
+   });
+   return $ventas;
        }
 
    

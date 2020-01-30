@@ -21,6 +21,10 @@ Route::post('articulos', 'ArticuloController@articulos');
 Route::post('set-articulos', 'ArticuloController@setarticulos');
 Route::post('update-art', 'ArticuloController@actualizar');
 Route::post('delete-art', 'ArticuloController@artdelete');
+Route::post('categoria-all', 'ArticuloController@setcategorias');
+Route::post('save-articulo', 'ArticuloController@storearticulo');
+
+
 // --------------------------------------------------------------------------------
 
 //  apis de personas
@@ -44,6 +48,7 @@ Route::post('all-ingresos', 'IngresoController@setingresos');
 // busqueda avanzada
 Route::post('busqueda-ingreso', 'IngresoController@busquedaingreso');
 Route::post('busqueda-ingreso-fecha', 'IngresoController@setingresofecha');
+Route::post('busqueda-ingreso-mes', 'IngresoController@setmesingreso');
 // ------------------------------------
 
 //----------------------------------------------------------------------------------

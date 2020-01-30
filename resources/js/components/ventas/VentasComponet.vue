@@ -126,9 +126,9 @@
               <v-icon color="red"  @click="remove(item)">mdi-delete</v-icon>
             </template>
 
-            <template v-slot:item.impuesto="{ item }">
+            <!-- <template v-slot:item.impuesto="{ item }">
               <v-chip gray></v-chip>
-            </template>
+            </template> -->
           </v-data-table>
           <v-card-actions>
             <h3 v-text="'Total: '+eventoNum(total_venta)"></h3>
@@ -263,7 +263,7 @@ export default {
         );
 
         let v = data.forEach(value => {
-          let total = parseInt(value.precio_venta) *this.und;
+          let total = parseInt(value.precio_venta_art) *this.und;
           //  th.total_venta = th.total_venta + total;
           let newobj = {
             nombre: value.nombre,
@@ -271,7 +271,7 @@ export default {
             cantidad: this.und,
             codigo: value.codigo,
             total: total,
-            precio_venta: value.precio_venta,
+            precio_venta: value.precio_venta_art,
             idventa:null,
             descuento:null
           };

@@ -57,8 +57,10 @@
               <v-btn @click="busq=true" text icon>
                 <v-icon>mdi-magnify</v-icon>avanzada
               </v-btn>
-         
-              <v-btn @click="restablecer" :disabled="btnlupa" light text > <v-icon color="red" >mdi-refresh</v-icon> </v-btn>
+
+              <v-btn @click="restablecer" :disabled="btnlupa" light text>
+                <v-icon color="red">mdi-refresh</v-icon>
+              </v-btn>
             </v-col>
             <v-col cols="12" md="3">
               <v-text-field
@@ -171,8 +173,6 @@
                           <v-btn text color="primary" @click="$refs.menu1.save(date1)">OK</v-btn>
                         </v-date-picker>
                       </v-menu>
-                   
-                    
                     </v-col>
 
                     <v-col cols="12" md="4">
@@ -192,14 +192,24 @@
                             v-on="on"
                           ></v-text-field>
                         </template>
-                        <v-date-picker :min="date1" v-model="date2" no-title scrollable locale="es-co">
+                        <v-date-picker
+                          :min="date1"
+                          v-model="date2"
+                          no-title
+                          scrollable
+                          locale="es-co"
+                        >
                           <v-spacer></v-spacer>
                           <v-btn text color="primary" @click="menu2 = false">Cancel</v-btn>
                           <v-btn text color="primary" @click="$refs.menu2.save(date2)">OK</v-btn>
                         </v-date-picker>
                       </v-menu>
                     </v-col>
-                    <v-col cols="12" md="4"> <v-btn color="success" :loading="btn2lodig" @click="shearcavance" ><v-icon>mdi-magnify</v-icon> </v-btn></v-col>
+                    <v-col cols="12" md="4">
+                      <v-btn color="success" :loading="btn2lodig" @click="shearcavance">
+                        <v-icon>mdi-magnify</v-icon>
+                      </v-btn>
+                    </v-col>
                   </div>
                 </v-card-text>
               </v-card>
@@ -208,11 +218,9 @@
               <v-card flat>
                 <v-card-text>
                   <div class="row">
-
-                
-                   <v-col cols="12" md="4">
+                    <v-col cols="12" md="4">
                       <v-menu
-                        ref="menu2"
+                        ref="menu3"
                         v-model="menu3"
                         :close-on-content-click="false"
                         :return-value.sync="date3"
@@ -227,22 +235,57 @@
                             v-on="on"
                           ></v-text-field>
                         </template>
-                        <v-date-picker  v-model="date3" no-title scrollable locale="es-co">
+                        <v-date-picker v-model="date3" no-title scrollable locale="es-co">
                           <v-spacer></v-spacer>
                           <v-btn text color="primary" @click="menu3 = false">Cancel</v-btn>
-                          <v-btn text color="primary" @click="$refs.menu2.save(date3)">OK</v-btn>
+                          <v-btn text color="primary" @click="$refs.menu3.save(date3)">OK</v-btn>
                         </v-date-picker>
                       </v-menu>
-                      
                     </v-col>
-                       <v-col cols="12" md="4"> <v-btn color="success" :loading="btn2lodig" @click="shearfecha" ><v-icon>mdi-magnify</v-icon> </v-btn></v-col>
-                         </div>
+                    <v-col cols="12" md="4">
+                      <v-btn color="success" :loading="btn2lodig" @click="shearfecha">
+                        <v-icon>mdi-magnify</v-icon>
+                      </v-btn>
+                    </v-col>
+                  </div>
                 </v-card-text>
               </v-card>
             </v-tab-item>
             <v-tab-item>
               <v-card flat>
-                <v-card-text></v-card-text>
+                <v-card-text>
+                  <div class="row">
+                    <v-col cols="12" md="4">
+                      <v-menu
+                        ref="menu4"
+                        v-model="menu4"
+                        :close-on-content-click="false"
+                        :return-value.sync="date4"
+                        transition="scale-transition"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-text-field
+                            v-model="date4"
+                            label="mes"
+                            prepend-icon="mdi-calendar"
+                            readonly
+                            v-on="on"
+                          ></v-text-field>
+                        </template>
+                        <v-date-picker color="primary" v-model="date4" no-title scrollable  type="month" locale="es-co">
+                          <v-spacer></v-spacer>
+                          <v-btn text color="primary" @click="menu4 = false">Cancel</v-btn>
+                          <v-btn text color="primary" @click="$refs.menu4.save(date4)">OK</v-btn>
+                        </v-date-picker>
+                      </v-menu>
+                    </v-col>
+                    <v-col cols="12" md="4">
+                      <v-btn color="success" :loading="btn2lodig" @click="shearcmes">
+                        <v-icon>mdi-magnify</v-icon>
+                      </v-btn>
+                    </v-col>
+                  </div>
+                </v-card-text>
               </v-card>
             </v-tab-item>
           </v-tabs>
@@ -278,15 +321,17 @@ export default {
     //-------------------------------------------
     // datos para la busqueda avanzada
     busq: false,
-    btn2lodig :false,
+    btn2lodig: false,
     date1: new Date().toISOString().substr(0, 10),
-     date2: new Date().toISOString().substr(0, 10),
-     date3: new Date().toISOString().substr(0, 10),
+    date2: new Date().toISOString().substr(0, 10),
+    date3: new Date().toISOString().substr(0, 10),
+    date4: new Date().toISOString().substr(0, 10),
     menu1: false,
-    menu3:false,
+    menu3: false,
+    menu4: false,
     modal: false,
     menu2: false,
-    btnlupa:true,
+    btnlupa: true,
     // ---------------------------------------------
     lgtable: false,
     newdatatable: [],
@@ -312,64 +357,94 @@ export default {
       { text: "fecha de ingreso", value: "created_at" }
 
       //   { text: "Acciones", value: "action", align: "center" }
-    ],
-    
+    ]
   }),
   methods: {
-
-    shearcavance(){
+    shearcavance() {
       this.btn2lodig = true;
-      axios.post('api/busqueda-ingreso',
-      {inicio:this.date1,
-        fin:this.date2
-      })
-      .then(res => {
-        // console.log(res)
-        // this.datatable = res.data;
-        if (res.data.length>=1) {
-             this.newdatatable = res.data;
-        }else{
-          let msg = ['ingresos no encontrados con las fechas buscasdas','error'];
-          this.notificacion(msg);
-        }
-     
-         this.btnlupa = false;
-      }).finally(()=>{this.btn2lodig = false; this.busq = false})
-      .catch(err => {
-        console.error(err); 
-      })
+      axios
+        .post("api/busqueda-ingreso", { inicio: this.date1, fin: this.date2 })
+        .then(res => {
+          // console.log(res)
+          // this.datatable = res.data;
+          if (res.data.length >= 1) {
+            this.newdatatable = res.data;
+          } else {
+            let msg = [
+              "ingresos no encontrados con las fechas buscasdas",
+              "error"
+            ];
+            this.notificacion(msg);
+          }
 
+          this.btnlupa = false;
+        })
+        .finally(() => {
+          this.btn2lodig = false;
+          this.busq = false;
+        })
+        .catch(err => {
+          console.error(err);
+        });
     },
-    shearfecha(){
-            this.btn2lodig = true;
-      axios.post('api/busqueda-ingreso-fecha',
-      {fecha:this.date3,
-       
-      })
-      .then(res => {
-        // console.log(res)
-        // this.datatable = res.data;
-        if (res.data.length>=1) {
+    shearfecha() {
+      this.btn2lodig = true;
+      axios
+        .post("api/busqueda-ingreso-fecha", { fecha: this.date3 })
+        .then(res => {
+          // console.log(res)
+          // this.datatable = res.data;
+          if (res.data.length >= 1) {
+            this.newdatatable = res.data;
+          } else {
+            let msg = [
+              "ingresos no encontrados con las fechas buscasdas",
+              "error"
+            ];
+            this.notificacion(msg);
+          }
+          this.btnlupa = false;
+        })
+        .finally(() => {
+          this.btn2lodig = false;
+          this.busq = false;
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
+       shearcmes() {
+      this.btn2lodig = true;
+      axios
+        .post("api/busqueda-ingreso-mes", { mes: this.date4 })
+        .then(res => {
+          // console.log(res)
+          this.datatable = res.data;
+          if (res.data.length >= 1) {
              this.newdatatable = res.data;
-        }else{
-          let msg = ['ingresos no encontrados con las fechas buscasdas','error'];
-          this.notificacion(msg);
-        }
-     
-         this.btnlupa = false;
-      }).finally(()=>{this.btn2lodig = false; this.busq = false})
-      .catch(err => {
-        console.error(err); 
-      })
+          } else {
+            let msg = [
+              "ingresos no encontrados con las fechas buscasdas",
+              "error"
+            ];
+            this.notificacion(msg);
+          }
+          this.btnlupa = false;
+        })
+        .finally(() => {
+          this.btn2lodig = false;
+          this.busq = false;
+        })
+        .catch(err => {
+          console.error(err);
+        });
     },
 
-
-      restablecer(){
-         
-          this.btnlupa = true;
-          this.chartData.rows = [];
-           this.getimgresos();
-      },
+    restablecer() {
+      this.btnlupa = true;
+      this.chartData.rows = [];
+      this.getimgresos();
+    },
 
     blokdesc() {
       alert("desbloquear");
@@ -440,7 +515,6 @@ export default {
       this.snackbar = true;
     },
     getimgresos() {
-      
       this.lgtable = true;
       axios
         .post("api/all-ingresos")

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\articulo;
+use App\categoria;
 use Illuminate\Http\Request;
 
 class ArticuloController extends Controller
@@ -33,19 +34,47 @@ class ArticuloController extends Controller
 
         
         return response()->json($consulta, 200);
-    
+        
         }
 
 
     public function setarticulos()
     {
-        $data = articulo::all();  
+        $data = articulo::select('codigo')->where('artdelete','=',1)->get();  
          
-        return response()->json($data, 200);
+        $consulta = [];
+
+        foreach ($data as $key => $value) {
+            $datos = articulo::join('detalle_ingreso','articulo.id','=','detalle_ingreso.idarticulo')
+            ->select('articulo.*') 
+            // ->where('articulo.artelete','=',1)
+            ->where('articulo.codigo',$value['codigo'])
+            ->orderBy('detalle_ingreso.id', 'desc')
+            ->first();
+           if($datos == null){
+            array_push($consulta,$value['codigo']);
+           }
+        $sendart=[];
+           foreach ($consulta as $key => $value) {
+             $art = articulo::where('codigo',$value)->first();
+             array_push($sendart,$art);
+           }
+
+           
+        }
+
+        return response()->json($sendart, 200);
     
         }
 
-  
+    public function storearticulo(Request $request){
+        $data = $request->all();
+       if (articulo::create($data)){
+           return response()->json('resgistrado');
+       }else{
+        return response()->json('error al registrar');
+       }
+    }
  
 
     public function actualizar(Request $request)
@@ -64,4 +93,12 @@ class ArticuloController extends Controller
         $art->update($data);
         return response()->json($data['id']);
     }
+
+    public function setcategorias(){
+        $data = categoria::all();
+        return response()->json($data, 200);
+    }   
+
+    
+
 }
