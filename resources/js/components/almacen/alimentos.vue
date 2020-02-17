@@ -36,8 +36,8 @@
                     background-color="primary"
                     class="elevation-2"
                     dark
-                    :centered="centered"
-                    :grow="grow"
+                    
+               
                    
                 >
                     <v-tabs-slider></v-tabs-slider>
@@ -61,12 +61,12 @@
                     :search="search"
                 >
                     <template v-slot:item.estado="{ item }">
-                        <v-chip :color="getColor(item.estado)" dark>
+                      
                             <v-avatar left>
-                                <v-icon>{{ iconest(item.estado) }}</v-icon>
+                                <v-icon :color="getColor(item.estado)">{{ iconest(item.estado) }}</v-icon>
                             </v-avatar>
                             {{ estadoart(item.estado) }}
-                        </v-chip>
+                        
                     </template>
                     <template v-slot:item.acciones="{ item }">
                         <v-btn text icon color="gray" @click="dialogo(item)">
@@ -596,7 +596,7 @@ export default {
         },
         getarticulos(){
              axios
-                .post("api/set-articulos")
+                .post("api/set-articulos-sin    ")
                 .then(res => {
                     this.articulosn = res.data;
                 })

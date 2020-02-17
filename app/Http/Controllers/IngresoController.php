@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\ingreso;
 use App\persona;
 use App\articulo;
+use App\base_dia;
+
+
 
 use Illuminate\Http\Request;
 
@@ -32,6 +35,7 @@ class IngresoController extends Controller
 
         $ingreso = ingreso::leftJoin('detalle_ingreso','ingreso.id','=','detalle_ingreso.idingreso')
         ->orderBy('ingreso.created_at', 'desc')
+        ->whereNotIn('ingreso.idproveedor',[3])
         ->get();
   
         $ingresos = $this->prueba($ingreso);
@@ -82,6 +86,10 @@ class IngresoController extends Controller
           });
 
           return json_decode($ingreso);
+        }
+        public function basedia(Request $request){
+             $data = base_dia::all();
+            return response()->json($data);
         }
 
     }

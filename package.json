@@ -27,6 +27,7 @@
     "dependencies": {
         "echarts": "^4.6.0",
         "v-charts": "^1.19.0",
+        "vue-cc-quaggajs": "^2.2.2",
         "vuetify": "^2.1.15"
     }
 }

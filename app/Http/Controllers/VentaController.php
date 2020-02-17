@@ -9,6 +9,8 @@ use App\detalleingreso;
 use App\User;
 use App\articulo;
 use App\persona;
+use App\base_dia;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mike42\Escpos\Printer;
@@ -21,12 +23,21 @@ use Carbon\Carbon;
 class VentaController extends Controller
 {
    public function getventa(Request $request){
+
       
       $nombre_impresora = "POS-58";
 
       $data = $request->all();
+      $cont = 0;
+
+     
+      
+ 
+       
+      
         $venta =  venta::create($data);
          $nombre = User::where('id',$data['user_id'])->first();
+
 $connector = new WindowsPrintConnector($nombre_impresora);
 $printer = new Printer($connector);
 
@@ -55,6 +66,14 @@ $printer->setJustification(Printer::JUSTIFY_CENTER);
       foreach ($data['detalles'] as $key => $value) {
             $value['idventa']= $venta->id;
             detalleventa::create($value);
+            $articulo = articulo::find($value['idarticulo']);
+            $articulo['stock'] = $articulo['stock'] - $value['cantidad'];
+            if ( $articulo['stock'] <= 10 ) {
+               $articulo['estado'] = 2;
+            }elseif($articulo['stock']== 0){
+               $articulo['estado'] = 3;
+            }
+            $articulo->save();
              $total =  (int)$value['precio_venta'] *  (int)$value['cantidad'];
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text($value['nombre']."\n");        
@@ -83,8 +102,12 @@ $printer->pulse();
 $printer->close();
 
 $numcomp = venta::max('num_comprobante');
-          $resp = ['msg'=>'registrado con exito','numero'=>$numcomp];
+$allart = articulo::all();  
+          $resp = ['msg'=>'registrado con exito','numero'=>$numcomp,'data'=>$allart
+         ];
+
      return response()->json($resp);
+         
   
       //   $data = $request->all();
       //    $venta =  venta::create($data);
@@ -95,6 +118,13 @@ $numcomp = venta::max('num_comprobante');
       //    }
 
        
+   }
+   public function validacionart($obj){
+      if ($obj > 0) {
+         return 1;
+      }else{
+         return 2;
+      }
    }
 
    public function getdetalleventa(Request $request){
@@ -142,6 +172,22 @@ $numcomp = venta::max('num_comprobante');
        $ventas->precio_compra = $precio_compra;
    });
    return $ventas;
+       }
+
+
+       public function baseDay(){
+         $date = Carbon::now();
+          $base = base_dia::whereDate('created_at', '=', $date->format('Y-m-d'))->get();
+          if ( count($base) == 0) {
+         return response()->json(4004);
+          }
+          return response()->json($base);
+
+       }
+       public function saveBase(Request $request){
+         $data = $request->all();
+         base_dia::create($data);
+         return response()->json(200);
        }
 
    

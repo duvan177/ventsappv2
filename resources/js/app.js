@@ -12,10 +12,7 @@ import Vuetify from 'vuetify'
 import colors from 'vuetify/lib/util/colors'
 
 import '@mdi/font/css/materialdesignicons.css'
-Vue.use(Vuetify, {
-
-
-});
+Vue.use(Vuetify);
 
 /**
  * The following block of code may be used to automatically register your
@@ -41,7 +38,23 @@ Vue.component('venta-component', require('./components/ventas/VentasComponet.vue
 Vue.component('dataingresos-component', require('./components/datatablas/DataIngresosComponet.vue').default);
 Vue.component('dataventas-component', require('./components/datatablas/DataVentasComponet.vue').default);
 //----------------------------------------------------------------------------
+// Gestion de la seccion de panaderia7
 
+Vue.component('createpan-component', require('./components/panaderia/CreatePanComponet.vue').default);
+Vue.component('listpan-component', require('./components/panaderia/ListPanComponet.vue').default);
+Vue.component('ingresospan-component', require('./components/panaderia/IngresoPanComponet.vue').default);
+Vue.component('listbaja-component', require('./components/panaderia/BajaPanComponet.vue').default);
+
+//-------------------------------------------------------------------------------
+
+// seccion de informes de balance
+Vue.component('balance-component', require('./components/balance/BalanceComponet.vue').default);
+Vue.component('resumen-component', require('./components/balance/ResumenBalanceComponet.vue').default);
+
+
+
+
+// -------------------------------------------------------------------------------------------------
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

@@ -70,7 +70,7 @@
           <div class="row">
             <v-col cols="12" md="6">Detalle de ventas</v-col>
             <v-col cols="12" md="3">
-              <v-btn @click="busq=true" text icon>
+              <v-btn @click="busq=true" text >
                 <v-icon>mdi-magnify</v-icon>avanzada
               </v-btn>
 
@@ -480,7 +480,7 @@ export default {
     restablecer() {
       this.btnlupa = true;
       this.chartData.rows = [];
-      this.getimgresos();
+       this.getventas();
     },
 
     blokdesc() {
@@ -589,11 +589,19 @@ export default {
         }
       },
       rentabilidad(obj){
-        let pv = parseInt(obj.precio_venta) * obj.cantidad;
-        let pc =  parseInt(obj.precio_compra.precio_compra)* obj.cantidad;
-      
-        return pv - pc;
+        let pv;
+       let pc;
+      if (obj.precio_compra != null) {
+        pv = parseInt(obj.precio_venta) * obj.cantidad;
+          pc  =  parseInt(obj.precio_compra.precio_compra)* obj.cantidad;
+           return pv - pc;
+      }else{
+           pv = parseInt(obj.precio_venta) * obj.cantidad;
+ return pv;
       }
+       
+      },
+   
   },
   mounted() {
     this.getventas();
@@ -617,15 +625,15 @@ export default {
       val.forEach(element => {
         cant += element.cantidad;
         total += parseInt(element.precio_venta) * element.cantidad;
-        rent += parseInt(element.precio_compra.precio_compra) * element.cantidad;
+        // rent += parseInt(element.precio_compra.precio_compra) * element.cantidad;
         if (element.estado === '2') {
-          deb += (parseInt(element.precio_venta) * element.cantidad) -  (parseInt(element.precio_compra.precio_compra)* element.cantidad); 
+          // deb += (parseInt(element.precio_venta) * element.cantidad) -  (parseInt(element.precio_compra.precio_compra)* element.cantidad); 
         }
 
       });
       this.totalingreso = total;
-      this.rentab = rent.toLocaleString();
-      this.totaldeb = deb.toLocaleString();
+      // this.rentab = (total - rent).toLocaleString() ;
+      // this.totaldeb = deb.toLocaleString();
       this.cantidadart = cant;
       console.log(deb);
     } 

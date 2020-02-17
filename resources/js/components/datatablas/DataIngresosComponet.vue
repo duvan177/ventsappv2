@@ -54,7 +54,7 @@
           <div class="row">
             <v-col cols="12" md="6">Detalle de ingresos</v-col>
             <v-col cols="12" md="3">
-              <v-btn @click="busq=true" text icon>
+              <v-btn @click="busq=true" text >
                 <v-icon>mdi-magnify</v-icon>avanzada
               </v-btn>
 
